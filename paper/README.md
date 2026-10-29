@@ -24,7 +24,12 @@ python stopfinder_rerun/compare_with_original.py results rerun/genome rerun/tran
 
 The last command lists every field (stop codon, +4 nucleotide, context, distance to and identity of the
 next stop, protein lengths, in-frame stops, whether the stop is in female-specific sequence) that differs
-from the original tables. Step 06 (the alternative *doublesex* exon located by a peptide search) and the
+from the original tables. Two differences are expected, both in `inframe_stops_in_female_specific`:
+stopfinder counts in-frame stops only in the female-specific segment that carries the termination codon,
+while the original scripts summed all female-specific segments. For *Culex* fru this leaves out a
+female-specific 5′ exon upstream of the start codon (16/2/5 instead of 23/5/6); for *Wyeomyia* fru it leaves
+out a 1,679 bp female-only 3′ end of the contig, downstream of the stop (12/3/10 instead of 26/4/13). The
+stopfinder values are the correct ones. Step 06 (the alternative *doublesex* exon located by a peptide search) and the
 contig search (steps 03 and 04) are specific to this study and are not part of stopfinder.
 
 ---
