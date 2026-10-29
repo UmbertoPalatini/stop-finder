@@ -1,13 +1,51 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
+type: software
 title: "stopfinder: termination codons in female-specific exons"
 version: 1.0.0
 date-released: 2026-10-29
 license: MIT
 repository-code: "https://github.com/UmbertoPalatini/stop-finder"
+keywords:
+  - sex-specific splicing
+  - stop codon
+  - doublesex
+  - fruitless
+  - bioinformatics
 authors:
   - family-names: Palatini
     given-names: Umberto
-    # orcid: "https://orcid.org/0000-0000-0000-0000"
-# After the first GitHub release is archived on Zenodo, add its DOI here:
+    orcid: "https://orcid.org/0000-0002-2435-2655"
+# After the first GitHub release is archived on Zenodo, add the software DOI here:
 # doi: 10.5281/zenodo.XXXXXXX
+references:
+  - type: article
+    title: "Evolution of MOSN, a novel sex-specifically spliced neuronal gene in the Aedes aegypti mosquito"
+    authors:
+      - family-names: Tsitohay
+        given-names: Y. N.
+      - family-names: Basrur
+        given-names: N. S.
+      - family-names: Palatini
+        given-names: Umberto
+        orcid: "https://orcid.org/0000-0002-2435-2655"
+      - family-names: DeFoe
+        given-names: A. E.
+      - family-names: Jones
+        given-names: T. A.
+      - family-names: Peng
+        given-names: J.
+      - family-names: Herre
+        given-names: M.
+      - family-names: Zhao
+        given-names: L.
+      - family-names: Eddy
+        given-names: S. R.
+      - family-names: Shai
+        given-names: N.
+      - family-names: Vosshall
+        given-names: L. B.
+    journal: bioRxiv
+    year: 2026
+    doi: 10.64898/2026.08.26.747258
+    url: "https://doi.org/10.64898/2026.08.26.747258"

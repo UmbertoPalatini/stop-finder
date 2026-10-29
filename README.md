@@ -6,7 +6,7 @@ sequence context, the nucleotide after it, and how far away the next in-frame st
 
 stopfinder works for any species and any gene with a female and a male isoform that share a start codon,
 such as *doublesex*, *fruitless* or other sex-specifically spliced genes. It was written for the analysis of
-MOSN, *doublesex* and *fruitless* in five mosquito species (see [`paper/`](paper/)), and generalised so that
+MOSN, *doublesex* and *fruitless* in five mosquito species ([Tsitohay et al. 2026](https://doi.org/10.64898/2026.08.26.747258); see [`paper/`](paper/)), and generalised so that
 anyone can run it on their own data.
 
 ## What it does
@@ -228,6 +228,12 @@ check that genome and transcript mode agree.
 
 If you use stopfinder, please cite it as given in [`CITATION.cff`](CITATION.cff) (GitHub shows this as
 "Cite this repository").
+
+stopfinder was developed for, and first used in:
+
+> Tsitohay YN, Basrur NS, Palatini U, DeFoe AE, Jones TA, Peng J, Herre M, Zhao L, Eddy SR, Shai N,
+> Vosshall LB (2026). Evolution of MOSN, a novel sex-specifically spliced neuronal gene in the *Aedes aegypti*
+> mosquito. bioRxiv. https://doi.org/10.64898/2026.08.26.747258
 
 ## License
 
