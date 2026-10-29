@@ -1,0 +1,10 @@
+species	gene	female_tx	male_tx	add_exons
+Aedes_aegypti	MOSN	AAEL011211-RA	AAEL011211-RB	.
+Aedes_aegypti	dsx	AAEL009114-RC-FS	AAEL009114-RC	.
+Aedes_aegypti	fru	AAEL024283-RM	AAEL024283-RM	121092988-121094445
+Culex_quinquefasciatus	MOSN	XM_038260416.FS.1	XM_038260416.1	.
+Culex_quinquefasciatus	dsx	XM_038249266.FS.1	XM_038249266.1	.
+Culex_quinquefasciatus	fru	XM_038266500.FS.1	XM_038266500.1	.
+Anopheles_gambiae	MOSN	XM_061644034.FS.1	XM_061644034.1	.
+Anopheles_gambiae	dsx	XM_061649162.FS.1	XM_061649162.1	.
+Anopheles_gambiae	fru	XM_061655063.1	XM_061655063.1	1407578-1409514
