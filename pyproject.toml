@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stopfinder"
+version = "1.0.0"
+description = "Termination codons in female-specific (sex-specifically spliced) exons"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Umberto Palatini"}]
+requires-python = ">=3.9"
+dependencies = ["biopython>=1.79"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.optional-dependencies]
+xlsx = ["openpyxl>=3"]
+test = ["pytest"]
+
+[project.scripts]
+stopfinder = "stopfinder.cli:main"
+
+[project.urls]
+Repository = "https://github.com/UmbertoPalatini/stop-finder"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["tests"]
+testpaths = ["tests"]
