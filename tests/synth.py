@@ -89,8 +89,8 @@ def build_genome(m, seed=2):
         tx(chrom, strand, "M" + sfx, ["e1", "e2", "e3", "e4"], atg, male_stop_end)
         tx(chrom, strand, "FA" + sfx, ["e1", "e2", "efa", "e3", "e4"], None, None)
         tx(chrom, strand, "FB" + sfx, ["e1", "e2", "efb", "e3", "e4"], None, None)
-    fasta = f">chr1\n" + "\n".join(chr1[i:i + 60] for i in range(0, L, 60)) + \
-            f"\n>chr2\n" + "\n".join(chr2[i:i + 60] for i in range(0, L, 60)) + "\n"
+    fasta = ">chr1\n" + "\n".join(chr1[i:i + 60] for i in range(0, L, 60)) + \
+            "\n>chr2\n" + "\n".join(chr2[i:i + 60] for i in range(0, L, 60)) + "\n"
     return fasta, "\n".join(gtf) + "\n", coords, L
 
 

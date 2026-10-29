@@ -17,7 +17,9 @@ def read_table(path, required):
         missing = [c for c in required if c not in rows[0]]
         if missing:
             sys.exit(f"{path}: missing column(s) {', '.join(missing)}; found {', '.join(rows[0])}")
-    for r in rows:
+    for i, r in enumerate(rows, 2):
+        if None in r:
+            sys.exit(f"{path}: a row has more columns than the header (row {i}, after skipping comments)")
         for k, v in list(r.items()):
             r[k] = (v or "").strip()
     return rows
@@ -87,36 +89,44 @@ def run_pairs(pairs, outdir, table, xlsx):
 
 
 def cmd_transcripts(a):
-    seqs, headers, ids_in = {}, {}, {}
-    for path in (a.fasta or []) + ([a.female] if a.female else []) + ([a.male] if a.male else []):
-        s, h = read_fasta(path)
-        ids_in[path] = list(s)
-        for k in s:
-            if k in seqs and seqs[k] != s[k]:
-                sys.exit(f"sequence id '{k}' appears twice with different sequences")
-        seqs.update(s)
-        headers.update(h)
     if a.pairs:
+        if a.female or a.male:
+            sys.exit("use either --female/--male or --pairs/--fasta, not both")
+        if not a.fasta:
+            sys.exit("--pairs needs --fasta")
+        seqs, headers = {}, {}
+        for path in a.fasta:
+            s, h = read_fasta(path)
+            for k in s:
+                if k in seqs and seqs[k] != s[k]:
+                    sys.exit(f"sequence id '{k}' appears in more than one FASTA with different sequences; "
+                             "make the IDs unique (for example prefix them with the sample name)")
+            seqs.update(s)
+            headers.update(h)
         rows = read_table(a.pairs, ["pair_id", "female", "male"])
+        fseqs = mseqs = seqs
+        fheads = mheads = headers
     elif a.female and a.male:
-        f_ids, m_ids = ids_in[a.female], ids_in[a.male]
-        if len(f_ids) != 1 or len(m_ids) != 1:
+        # read separately: a female and a male contig can share a name (e.g. TRINITY_DN1_c0_g1_i1)
+        fseqs, fheads = read_fasta(a.female)
+        mseqs, mheads = read_fasta(a.male)
+        if len(fseqs) != 1 or len(mseqs) != 1:
             sys.exit("--female and --male must contain one sequence each; use --pairs for several pairs")
-        rows = [{"pair_id": a.name, "female": f_ids[0], "male": m_ids[0],
+        rows = [{"pair_id": a.name, "female": next(iter(fseqs)), "male": next(iter(mseqs)),
                  "male_start": str(a.male_start or ""), "female_start": str(a.female_start or "")}]
     else:
         sys.exit("give --female and --male, or --pairs with --fasta")
 
     def builder(r):
         def build():
-            for col in ("female", "male"):
-                if r[col] not in seqs:
+            for col, d in (("female", fseqs), ("male", mseqs)):
+                if r[col] not in d:
                     raise ValueError(f"sequence '{r[col]}' not found in the FASTA input")
             return transcripts.build_pair(
-                r["pair_id"], r["female"], seqs[r["female"]], r["male"], seqs[r["male"]],
+                r["pair_id"], r["female"], fseqs[r["female"]], r["male"], mseqs[r["male"]],
                 male_start=opt_int(r.get("male_start")), female_start=opt_int(r.get("female_start")),
                 min_segment=a.min_segment, table=a.table,
-                male_header=headers.get(r["male"], ""), female_header=headers.get(r["female"], ""))
+                male_header=mheads.get(r["male"], ""), female_header=fheads.get(r["female"], ""))
         return build
 
     return run_pairs(((r["pair_id"], builder(r)) for r in rows), a.outdir, a.table, a.xlsx)

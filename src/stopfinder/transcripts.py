@@ -96,7 +96,7 @@ def build_pair(pair_id, fid, F, mid, M, male_start=None, female_start=None, min_
                male_header="", female_header=""):
     """Prepare a PairInput from two sequences. Starts are 1-based positions, or None to infer them."""
     notes = []
-    f2m, ident = align(F, M)
+    f2m, ident = align(F, M, min_gap=min_segment)
     if ident < 0.9:
         notes.append(f"aligned identity only {ident:.0%}; check that the two sequences are isoforms of one gene "
                      "and in the same orientation")

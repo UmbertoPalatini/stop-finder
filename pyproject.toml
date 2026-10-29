@@ -1,20 +1,20 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "stopfinder"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Termination codons in female-specific (sex-specifically spliced) exons"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "Umberto Palatini"}]
 requires-python = ">=3.9"
 dependencies = ["biopython>=1.79"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
-    "License :: OSI Approved :: MIT License",
 ]
 
 [project.optional-dependencies]
@@ -26,6 +26,9 @@ stopfinder = "stopfinder.cli:main"
 
 [project.urls]
 Repository = "https://github.com/UmbertoPalatini/stop-finder"
+
+[tool.setuptools.dynamic]
+version = {attr = "stopfinder.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]

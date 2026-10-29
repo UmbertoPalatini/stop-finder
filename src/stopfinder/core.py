@@ -97,13 +97,15 @@ def analyse(p, table=1):
     if mstop is None:
         notes.append("no in-frame stop before the end of the male sequence")
 
-    # the segment the stop belongs to: the last one that starts at or before the stop
+    # the segment the stop belongs to: the last coding-region segment that starts at or before the stop
+    # (female-specific 5' UTR sequence, before the start codon, cannot carry the stop)
+    cds_segs = [s for s in p.segments if s[1] > fs]
     key = None
     if fstop is not None:
-        before = [s for s in p.segments if s[0] <= fstop]
+        before = [s for s in cds_segs if s[0] <= fstop]
         key = before[-1] if before else None
-    elif p.segments:
-        key = p.segments[0]
+    elif cds_segs:
+        key = cds_segs[0]
 
     location = frame = ""
     nt4 = ctx = nxt_n = nxt_c = tail = ""
@@ -113,9 +115,11 @@ def analyse(p, table=1):
             location = "female-specific"
         elif n_spec > 0:
             location = "junction"
-        elif not p.segments:
+        elif all(p.f2m[i] is None for i in range(fstop, min(fstop + 3, len(p.f2m)))):
+            location = "not aligned to male (UTR, contig end or small indel)"
+        elif not cds_segs:
             location = "shared (no female-specific sequence)"
-        elif fstop < p.segments[0][0]:
+        elif fstop < cds_segs[0][0]:
             location = "shared, upstream of female-specific sequence"
             notes.append("translation ends before the female-specific sequence, which is therefore not coding")
         else:
@@ -129,7 +133,7 @@ def analyse(p, table=1):
                 notes.append(f"no in-frame stop in the female-specific segment ({seg_len} bp, "
                              f"{'not ' if seg_len % 3 else ''}a multiple of 3); the reading frame is shifted "
                              f"and the stop lies {fstop - key[1]} nt into the downstream shared sequence")
-            else:
+            elif frame == "male frame":
                 notes.append(f"no in-frame stop in the female-specific segment ({seg_len} bp); translation "
                              f"continues in the male frame")
         nt4 = F[fstop + 3] if fstop + 3 < len(F) else ""

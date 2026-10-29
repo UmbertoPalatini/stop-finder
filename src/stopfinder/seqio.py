@@ -64,18 +64,23 @@ class IndexedFasta:
 
     def _build(self):
         index, name, length, offset, blen, llen = {}, None, 0, 0, None, None
-        pos = 0
+        pos, short_line = 0, False
         with open(self.path, "rb") as fh:
             for raw in fh:
                 if raw.startswith(b">"):
                     if name is not None:
                         index[name] = (length, offset, blen or 0, llen or 0)
                     name = raw[1:].split()[0].decode()
-                    length, blen, llen, offset = 0, None, None, pos + len(raw)
+                    length, blen, llen, offset, short_line = 0, None, None, pos + len(raw), False
                 else:
                     seq = raw.rstrip(b"\r\n")
                     if blen is None:
                         blen, llen = len(seq), len(raw)
+                    elif (short_line and seq) or len(seq) > blen:
+                        raise ValueError(f"{self.path}: sequence '{name}' has lines of different lengths; "
+                                         "reformat it (e.g. seqkit seq -w 60) before use")
+                    if len(seq) < blen:
+                        short_line = True       # only the last line of a sequence may be shorter
                     length += len(seq)
                 pos += len(raw)
         if name is not None:

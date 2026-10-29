@@ -99,6 +99,10 @@ The female start is the female position aligned to the male start codon, unless 
 Options: `--min-segment` (default 15): unaligned female regions shorter than this are treated as
 differences between individuals, not as female-specific sequence.
 
+When the sequences come from several assemblies, IDs must be unique across the `--fasta` files (Trinity
+names restart in every assembly, so prefix them with the sample name). With `--female`/`--male` the two
+files are read separately and the names may be the same.
+
 ### Genome mode
 
 `--pairs` is a tab-separated table with a header:
@@ -114,6 +118,7 @@ differences between individuals, not as female-specific sequence.
 
 The annotation can be GTF (`transcript_id`) or GFF3 (`Parent=` of exon and CDS features). Transcript IDs
 are also matched without the `rna-` and `transcript:` prefixes that NCBI and Ensembl GFF3 files use.
+Genome FASTA lines must have the same length within each sequence (as samtools requires).
 Overlapping exons in the female transcript (for example an added exon that extends an annotated one) are
 merged. The genome FASTA must be uncompressed; a samtools-compatible `.fai` index is created next to it if
 missing.
@@ -164,7 +169,7 @@ Pairs that cannot be analysed (for example a missing transcript ID) are listed i
 | `female_specific_bp` | length of that segment |
 | `stop_codon`, `stop_codon_rna` | termination codon of the female ORF |
 | `stop_pos_female`, `stop_genomic` | position of its first base in the female mRNA, and in the genome (genome mode; transcript orientation, so on the − strand this is the highest coordinate of the codon) |
-| `stop_location` | `female-specific` (all three bases), `junction` (one or two bases), `shared, downstream of female-specific sequence`, `shared, upstream of female-specific sequence` (translation ends before the female sequence) or `shared (no female-specific sequence)` |
+| `stop_location` | `female-specific` (all three bases), `junction` (one or two bases), `shared, downstream of female-specific sequence`, `shared, upstream of female-specific sequence` (translation ends before the female sequence), `shared (no female-specific sequence)`, or (transcript mode) `not aligned to male (UTR, contig end or small indel)` |
 | `frame_vs_male` | for stops in shared sequence: `male frame`, or `shifted +1`/`+2` (nt offset of the female reading frame from the male one) |
 | `nt_plus4` | the nucleotide 3′ of the stop codon |
 | `context` | 6 nt upstream, the stop codon, 6 nt downstream |
