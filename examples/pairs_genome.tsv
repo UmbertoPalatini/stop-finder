@@ -1,0 +1,4 @@
+pair_id	female_tx	male_tx	extra_female_exons	start
+exonA_plus	female_A	male	.	.
+exonB_plus	female_B	male	.	.
+exonA_minus	female_A.minus	male.minus	.	.
