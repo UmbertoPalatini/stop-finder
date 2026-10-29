@@ -227,3 +227,42 @@ def test_random_gene_structures(seed):
     assert row["stop_location"] == "female-specific", (kind, p.segments, (a, b))
     assert len(p.segments) == 1
     assert abs(p.segments[0][0] - a) <= 6 and abs(p.segments[0][1] - b) <= 6
+
+
+def test_single_pair_with_identical_contig_names(model, tmp_path):
+    """Trinity names restart in every assembly, so a female and a male contig can share a name."""
+    male, fa, _ = mrnas(model)
+    (tmp_path / "f.fa").write_text(f">TRINITY_DN1_c0_g1_i1\n{fa}\n")
+    (tmp_path / "m.fa").write_text(f">TRINITY_DN1_c0_g1_i1\n{male}\n")
+    assert cli.main(["transcripts", "--female", str(tmp_path / "f.fa"), "--male", str(tmp_path / "m.fa"),
+                     "-o", str(tmp_path / "o")]) == 0
+    assert read_rows(tmp_path / "o" / "summary.tsv")["pair1"]["stop_codon"] == "TGA"
+
+
+def test_uneven_fasta_lines_are_rejected(tmp_path):
+    (tmp_path / "g.fa").write_text(">c\n" + "A" * 60 + "\n" + "C" * 40 + "\n" + "G" * 60 + "\n")
+    with pytest.raises(ValueError, match="different lengths"):
+        IndexedFasta(str(tmp_path / "g.fa"))
+    (tmp_path / "ok.fa").write_text(">c\n" + "A" * 60 + "\n" + "C" * 40 + "\n\n>d\nACGT\n")
+    assert IndexedFasta(str(tmp_path / "ok.fa")).fetch("c", 55, 65) == "AAAAAACCCCC"
+
+
+def test_table_row_with_extra_column(tmp_path):
+    (tmp_path / "p.tsv").write_text("pair_id\tfemale\tmale\nA\tF\tM\textra\n")
+    with pytest.raises(SystemExit, match="more columns than the header"):
+        cli.read_table(str(tmp_path / "p.tsv"), ["pair_id"])
+
+
+def test_female_specific_5utr_does_not_carry_the_stop(model, genome_files, tmp_path):
+    """A female-only 5' UTR stretch must not be taken as the segment that carries the stop."""
+    d, coords, _ = genome_files
+    s, e = coords["e1"]
+    gtf = (d / "genes.gtf").read_text()
+    (tmp_path / "g.gtf").write_text(gtf + f'chr1\ttest\texon\t{s - 300}\t{s - 201}\t.\t+\t.\tgene_id "G"; '
+                                          f'transcript_id "FA";\n')
+    (tmp_path / "p.tsv").write_text("pair_id\tfemale_tx\tmale_tx\nA\tFA\tM\n")
+    assert cli.main(["genome", "--genome", str(d / "genome.fa"), "--annotation", str(tmp_path / "g.gtf"),
+                     "--pairs", str(tmp_path / "p.tsv"), "-o", str(tmp_path / "o")]) == 0
+    r = read_rows(tmp_path / "o" / "summary.tsv")["A"]
+    assert r["stop_location"] == "female-specific" and r["female_specific_bp"] == "96"
+    assert r["female_specific_segments"].startswith("1-100(100bp)")
