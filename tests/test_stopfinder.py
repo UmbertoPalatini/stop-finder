@@ -266,3 +266,23 @@ def test_female_specific_5utr_does_not_carry_the_stop(model, genome_files, tmp_p
     r = read_rows(tmp_path / "o" / "summary.tsv")["A"]
     assert r["stop_location"] == "female-specific" and r["female_specific_bp"] == "96"
     assert r["female_specific_segments"].startswith("1-100(100bp)")
+
+
+def test_inframe_count_uses_only_the_segment_with_the_stop(model, genome_files, tmp_path):
+    """Female-only sequence in the 5' UTR or downstream of the stop must not enter the in-frame stop count."""
+    d, coords, _ = genome_files
+    s1 = coords["e1"][0]
+    e4 = coords["e4"][1]
+    gtf = (d / "genes.gtf").read_text()
+    extra = "".join(f'chr1\ttest\texon\t{a}\t{b}\t.\t+\t.\tgene_id "G"; transcript_id "FA";\n'
+                    for a, b in ((s1 - 300, s1 - 201), (e4 + 250, e4 + 549)))
+    (tmp_path / "g.gtf").write_text(gtf + extra)
+    (tmp_path / "p.tsv").write_text("pair_id\tfemale_tx\tmale_tx\nA\tFA\tM\n")
+    assert cli.main(["genome", "--genome", str(d / "genome.fa"), "--annotation", str(tmp_path / "g.gtf"),
+                     "--pairs", str(tmp_path / "p.tsv"), "-o", str(tmp_path / "o")]) == 0
+    r = read_rows(tmp_path / "o" / "summary.tsv")["A"]
+    assert r["female_specific_segments"].count("bp") == 3
+    assert r["inframe_stops_in_female_specific"] == "TAG:1,TGA:1"
+    with open(tmp_path / "o" / "female_specific_stops.tsv") as fh:
+        segs = {row["segment"] for row in csv.DictReader(fh, delimiter="\t")}
+    assert len(segs) >= 2          # stops of the other segments are still listed in the per-stop table

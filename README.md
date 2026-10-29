@@ -23,7 +23,8 @@ For each female/male isoform pair, stopfinder:
    - the nucleotide immediately after it (+4) and the sequence context (6 nt on each side);
    - the number of codons to the next in-frame stop, and that codon;
    - the female-specific peptide (from the start of the female-specific sequence to the stop);
-4. lists every stop codon in the female-specific sequence, in all three frames;
+4. lists every stop codon in the female-specific sequence, in all three frames, and counts the in-frame stops in
+   the segment that carries the termination codon;
 5. writes 60-nt probes for the female and male splice junctions, which the `junctions` command can search
    in per-sample assemblies to record in which samples each splice form was assembled.
 
@@ -174,7 +175,7 @@ Pairs that cannot be analysed (for example a missing transcript ID) are listed i
 | `nt_plus4` | the nucleotide 3′ of the stop codon |
 | `context` | 6 nt upstream, the stop codon, 6 nt downstream |
 | `codons_to_next_stop`, `next_stop_codon`, `next_stop_codon_rna` | next in-frame stop after the termination codon (1 = immediately adjacent). This is the longest extension that read-through of the first stop could add |
-| `inframe_stops_in_female_specific` | counts of in-frame stops (in the ORF frame) inside the female-specific segments |
+| `inframe_stops_in_female_specific` | counts of in-frame stops (in the ORF frame) inside the female-specific segment that carries the stop (the `*` segment), including the termination codon. Other female-specific segments (for example a female-only 5′ UTR or 3′ end) are listed in `female_specific_stops.tsv` but not counted here |
 | `female_tail_peptide` | translation from the codon containing the first base of the starred segment to the stop |
 | `note` | warnings and explanations, for example a frameshift, a non-ATG start, low alignment identity, or how the start codon was chosen |
 

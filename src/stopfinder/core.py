@@ -145,15 +145,16 @@ def analyse(p, table=1):
             first = fs + max(key[0] - fs, 0) // 3 * 3
             tail = translate(F[first:fstop + 3], table)
 
-    # every stop codon inside the female-specific segments, in all three frames
+    # every stop codon inside the female-specific segments, in all three frames (per-stop table);
+    # the summary count covers only the segment that carries the stop
     per_stop, inframe = [], Counter()
     for si, (a, b) in enumerate(p.segments, 1):
         for j in range(a, b - 2):
             c = F[j:j + 3]
             if c in stops:
                 fr = (j - fs) % 3
-                if fr == 0 and j >= fs:
-                    inframe[c] += 1
+                if fr == 0 and j >= fs and (a, b) == key:
+                    inframe[c] += 1      # summary count: only the segment that carries the stop
                 per_stop.append({
                     "pair_id": p.pair_id, "segment": si, "frame_vs_orf": fr,
                     "codon_index": (j - fs) // 3 + 1 if fr == 0 and j >= fs else "",
