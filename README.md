@@ -142,7 +142,13 @@ the 60-nt probe matches it on either strand with at most `--max-mismatches` mism
 i.e. ≥ 95% identity) and no gaps. The output gives the number of sequences per sample that contain each
 junction, and a summary of how many samples in each group have at least one.
 
-This records whether each splice form was assembled in each sample. It does not count reads.
+Give each species its own `samples.tsv` (and its own `junctions` run): the summary counts samples per
+group, so a table with two species gives denominators that mix them (for example `/6` instead of `/3`).
+
+This records whether each splice form was assembled in each sample. It does not count reads. The number of
+matching sequences per sample can differ by one or two from a BLAST-based search (for example `blastn-short`
+with an identity cutoff), because the matching rules differ slightly; whether a junction is present in a
+sample is normally the same.
 
 ## Output
 
